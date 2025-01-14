@@ -2,7 +2,11 @@ import 'package:blogapp/src/core/theme/color_theme.dart';
 import 'package:flutter/material.dart';
 
 class AuthButton extends StatelessWidget {
-  const AuthButton({super.key});
+  final String buttonText;
+  const AuthButton({
+    super.key,
+    required this.buttonText,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -25,9 +29,9 @@ class AuthButton extends StatelessWidget {
           backgroundColor: ColorTheme.transparentColor,
           shadowColor: ColorTheme.transparentColor,
         ),
-        child: const Text(
-          'Sign Up',
-          style: TextStyle(
+        child: Text(
+          buttonText,
+          style: const TextStyle(
             fontSize: 18,
             fontWeight: FontWeight.w600,
             color: ColorTheme.whiteColor,
