@@ -8,6 +8,6 @@ class ColorTheme {
   static const Color borderColor = Color.fromRGBO(52, 51, 67, 1);
   static const Color whiteColor = Colors.white;
   static const Color greyColor = Colors.grey;
-  static const Color errorColor = Colors.redAccent;
+  static Color errorColor = Colors.red.shade300;
   static const Color transparentColor = Colors.transparent;
 }
