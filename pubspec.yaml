@@ -12,6 +12,7 @@ dependencies:
   cupertino_icons: ^1.0.8
   flutter:
     sdk: flutter
+  flutter_bloc: ^9.0.0
   flutter_dotenv: ^5.2.1
   fpdart: ^1.1.1
   supabase_flutter: ^2.8.3
@@ -31,7 +32,7 @@ flutter:
   assets:
     #   - images/a_dot_burr.jpeg
     #   - images/a_dot_ham.jpeg
-        - .env
+    - .env
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images
   # For details regarding adding assets from package dependencies, see
