@@ -1,6 +1,7 @@
 import 'package:blogapp/src/features/auth/data/datasources/auth_remote_data_source.dart';
 import 'package:blogapp/src/features/auth/data/repository/auth_repository_impl.dart';
 import 'package:blogapp/src/features/auth/domain/repository/auth_repository.dart';
+import 'package:blogapp/src/features/auth/domain/usescases/user_login.dart';
 import 'package:blogapp/src/features/auth/domain/usescases/user_sign_up.dart';
 import 'package:blogapp/src/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:get_it/get_it.dart';
@@ -44,10 +45,16 @@ void _initAuth() {
         authRepository: serviceLocator(),
       ),
     )
+    ..registerFactory(
+      () => UserLogin(
+        authRepository: serviceLocator(),
+      ),
+    )
     //==>Blocs
     ..registerLazySingleton(
       () => AuthBloc(
         userSignUp: serviceLocator(),
+        userLogin: serviceLocator(),
       ),
     );
 }
