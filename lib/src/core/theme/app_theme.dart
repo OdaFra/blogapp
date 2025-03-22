@@ -12,13 +12,18 @@ class AppTheme {
 
   static final darkThemeMode = ThemeData.dark().copyWith(
     scaffoldBackgroundColor: ColorTheme.backgroundColor,
-    inputDecorationTheme: InputDecorationTheme(
-      contentPadding: const EdgeInsets.all(27),
-      enabledBorder: _border(),
-      focusedBorder: _border(ColorTheme.gradient2),
-      errorBorder: _border(ColorTheme.errorColor),
-    ),
     appBarTheme: const AppBarTheme(
         backgroundColor: ColorTheme.backgroundColor, elevation: 0),
+    chipTheme: ChipThemeData(
+      color: WidgetStateProperty.all(ColorTheme.backgroundColor),
+      side: BorderSide.none,
+    ),
+    inputDecorationTheme: InputDecorationTheme(
+      contentPadding: const EdgeInsets.all(27),
+      border: _border(),
+      enabledBorder: _border(),
+      focusedBorder: _border(ColorTheme.errorColor),
+      errorBorder: _border(ColorTheme.errorColor),
+    ),
   );
 }
