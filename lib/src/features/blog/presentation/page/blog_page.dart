@@ -59,7 +59,9 @@ class _BlogPageState extends State<BlogPage> {
                   final blog = state.blogs[index];
                   return BlogCard(
                     blog: blog,
-                    color: ColorTheme.gradient1,
+                    color: index % 2 == 0
+                        ? ColorTheme.gradient1
+                        : ColorTheme.gradient2,
                   );
                 });
           }
