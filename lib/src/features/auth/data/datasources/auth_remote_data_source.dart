@@ -15,7 +15,7 @@ abstract interface class AuthRemoteDataSource {
     required String email,
     required String password,
   });
-  Future<UserModel?> getCurrentUserData();
+  Future<UserModel?> getCurrentUser();
 }
 
 class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
@@ -43,6 +43,8 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
       return UserModel.fromJson(
         response.user!.toJson(),
       );
+    } on AuthException catch (e) {
+      throw ServerException(message: e.message);
     } catch (e) {
       throw ServerException(message: e.toString());
     }
@@ -73,7 +75,7 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
   }
 
   @override
-  Future<UserModel?> getCurrentUserData() async {
+  Future<UserModel?> getCurrentUser() async {
     try {
       if (currentUserSession != null) {
         final userData = await supabaseClient.from('profiles').select().eq(
@@ -84,6 +86,8 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
           email: currentUserSession!.user.email,
         );
       }
+    } on AuthException catch (e) {
+      throw ServerException(message: e.message);
     } catch (e) {
       throw ServerException(message: e.toString());
     }
