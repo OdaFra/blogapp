@@ -1,7 +1,10 @@
 import 'dart:io';
 
+import 'package:blogapp/src/core/constants/constants.dart';
 import 'package:blogapp/src/core/error/exceptions.dart';
 import 'package:blogapp/src/core/error/failure.dart';
+import 'package:blogapp/src/core/network/connection_check.dart';
+import 'package:blogapp/src/features/blog/data/datasources/blog_local_data_source.dart';
 import 'package:blogapp/src/features/blog/data/datasources/blog_remote_data_sources.dart';
 import 'package:blogapp/src/features/blog/data/models/blog_model.dart';
 import 'package:blogapp/src/features/blog/domain/entities/blog.dart';
@@ -11,8 +14,14 @@ import 'package:uuid/uuid.dart';
 
 class BlogRepositryImpl implements BlogRepository {
   final BlogRemoteDataSource remoteDataSource;
+  final BlogLocalDataSource localDataSource;
+  final ConnectionCheck connectionCheck;
 
-  BlogRepositryImpl({required this.remoteDataSource});
+  BlogRepositryImpl({
+    required this.localDataSource,
+    required this.connectionCheck,
+    required this.remoteDataSource,
+  });
   @override
   Future<Either<Failure, Blog>> uploadBlog({
     required File image,
@@ -22,6 +31,9 @@ class BlogRepositryImpl implements BlogRepository {
     required List<String> topics,
   }) async {
     try {
+      if (!await connectionCheck.isConnected) {
+        return left(Failure(Constants.noConnectionErrorMessage));
+      }
       BlogModel blogModel = BlogModel(
         id: const Uuid().v1(),
         posterId: posterId,
@@ -47,7 +59,13 @@ class BlogRepositryImpl implements BlogRepository {
   @override
   Future<Either<Failure, List<Blog>>> getAllBlogs() async {
     try {
+      if (!await connectionCheck.isConnected) {
+        final blogs = localDataSource.loadBlogs();
+        return right(blogs);
+      }
       final blogs = await remoteDataSource.getAllBlogs();
+      localDataSource.uploadLocalBlog(blogs: blogs);
+
       return right(blogs);
     } on ServerException catch (e) {
       return left(
