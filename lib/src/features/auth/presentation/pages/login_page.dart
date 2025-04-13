@@ -17,96 +17,169 @@ class LoginPage extends StatefulWidget {
   State<LoginPage> createState() => _LoginPageState();
 }
 
-class _LoginPageState extends State<LoginPage> {
+class _LoginPageState extends State<LoginPage>
+    with SingleTickerProviderStateMixin {
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
-
   final formKey = GlobalKey<FormState>();
 
+  late AnimationController _animationController;
+  late Animation<double> _fadeAnimation;
+  late Animation<double> _scaleAnimation;
+
   @override
+  void initState() {
+    super.initState();
+
+    _animationController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 1000),
+    );
+
+    _fadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(
+        parent: _animationController,
+        curve: Curves.easeInOut,
+      ),
+    );
+
+    _scaleAnimation = Tween<double>(begin: 0.8, end: 1.0).animate(
+      CurvedAnimation(
+        parent: _animationController,
+        curve: Curves.elasticOut,
+      ),
+    );
+
+    Future.delayed(const Duration(milliseconds: 300), () {
+      if (mounted) {
+        _animationController.forward();
+      }
+    });
+  }
+
   @override
   void dispose() {
     emailController.dispose();
     passwordController.dispose();
-
+    _animationController.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    formKey.currentState?.validate();
     return Scaffold(
-        body: Padding(
-      padding: const EdgeInsets.all(15.0),
-      child: BlocConsumer<AuthBloc, AuthState>(
-        listener: (context, state) {
-          if (state is AuthFailure) {
-            return showSnackBar(context, state.message);
-          } else if (state is AuthSuccess) {
-            Navigator.pushNamedAndRemoveUntil(
-                context, BlogPage.route(), (route) => false);
-          }
-        },
-        builder: (context, state) {
-          if (state is AuthLoading) {
-            return const Center(child: Loader());
-          }
-          return Form(
-            key: formKey,
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                const Text(
-                  'Sign In.',
-                  style: TextStyle(
-                    fontSize: 50,
-                    fontWeight: FontWeight.bold,
-                  ),
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.all(15.0),
+          child: BlocConsumer<AuthBloc, AuthState>(
+            listener: (context, state) {
+              if (state is AuthFailure) {
+                showSnackBar(context, state.message);
+              } else if (state is AuthSuccess) {
+                Navigator.pushNamedAndRemoveUntil(
+                    context, BlogPage.route(), (route) => false);
+              }
+            },
+            builder: (context, state) {
+              if (state is AuthLoading) {
+                return const Center(child: Loader());
+              }
+              return ConstrainedBox(
+                constraints: BoxConstraints(
+                  minHeight: MediaQuery.of(context).size.height,
                 ),
-                const SizedBox(height: 30),
-                AuthField(hinTex: 'Email', controller: emailController),
-                const SizedBox(height: 15),
-                AuthField(
-                  hinTex: 'Password',
-                  controller: passwordController,
-                  isObscureText: true,
-                ),
-                const SizedBox(height: 30),
-                AuthButton(
-                  buttonText: 'Sign In',
-                  onPressed: () {
-                    if (formKey.currentState!.validate()) {
-                      context.read<AuthBloc>().add(AuthLogin(
-                            email: emailController.text.trim(),
-                            password: passwordController.text.trim(),
-                          ));
-                    }
-                  },
-                ),
-                const SizedBox(height: 20),
-                GestureDetector(
-                  onTap: () => Navigator.push(context, SignUpPage.route()),
-                  child: RichText(
-                    text: TextSpan(
-                      text: "Already have an account?",
-                      style: Theme.of(context).textTheme.titleMedium,
-                      children: [
-                        TextSpan(
-                          text: ' Sign Up',
-                          style:
-                              Theme.of(context).textTheme.titleMedium?.copyWith(
-                                    color: ColorTheme.gradient2,
-                                  ),
+                child: Form(
+                  key: formKey,
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      AnimatedBuilder(
+                        animation: _animationController,
+                        builder: (context, child) {
+                          return Opacity(
+                            opacity: _fadeAnimation.value,
+                            child: Transform.scale(
+                              scale: _scaleAnimation.value,
+                              child: child,
+                            ),
+                          );
+                        },
+                        child: const Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Text(
+                              'Bienvenido a',
+                              style: TextStyle(
+                                fontSize: 24,
+                                fontWeight: FontWeight.w300,
+                              ),
+                            ),
+                            SizedBox(height: 8),
+                            Text(
+                              'Blog App',
+                              style: TextStyle(
+                                fontSize: 40,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ],
                         ),
-                      ],
-                    ),
+                      ),
+                      const SizedBox(height: 30),
+                      AuthField(
+                        hinTex: 'correo electrónico',
+                        controller: emailController,
+                        isEmail: true,
+                      ),
+                      const SizedBox(height: 15),
+                      AuthField(
+                        hinTex: 'contraseña',
+                        controller: passwordController,
+                        isObscureText: true,
+                        isPassword: true,
+                      ),
+                      const SizedBox(height: 30),
+                      AuthButton(
+                        buttonText: 'Iniciar sesión',
+                        onPressed: () {
+                          if (formKey.currentState!.validate()) {
+                            context.read<AuthBloc>().add(AuthLogin(
+                                  email: emailController.text.trim(),
+                                  password: passwordController.text.trim(),
+                                ));
+                          }
+                        },
+                      ),
+                      const SizedBox(height: 20),
+                      GestureDetector(
+                        onTap: () =>
+                            Navigator.push(context, SignUpPage.route()),
+                        child: RichText(
+                          text: TextSpan(
+                            text: "¿Ya tienes una cuenta?",
+                            style: Theme.of(context).textTheme.titleMedium,
+                            children: [
+                              TextSpan(
+                                text: ' Registrate',
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .titleMedium
+                                    ?.copyWith(
+                                      color: ColorTheme.gradient2,
+                                    ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      )
+                    ],
                   ),
-                )
-              ],
-            ),
-          );
-        },
+                ),
+              );
+            },
+          ),
+        ),
       ),
-    ));
+    );
   }
 }

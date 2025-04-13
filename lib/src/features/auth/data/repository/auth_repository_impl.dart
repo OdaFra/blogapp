@@ -51,7 +51,7 @@ class AuthRepositoryImpl implements AuthRepository {
       if (!await connectionCheck.isConnected) {
         final session = remoteDataSource.currentUserSession;
         if (session == null) {
-          return left(Failure('User not logged in!'));
+          return left(Failure('¡Usuario no conectado!'));
         }
         return right(
           UserModel(
@@ -63,7 +63,7 @@ class AuthRepositoryImpl implements AuthRepository {
       }
       final user = await remoteDataSource.getCurrentUser();
       if (user == null) {
-        return left(Failure('User not logged in!'));
+        return left(Failure('¡Usuario no conectado!'));
       }
       return right(user);
     } on ServerException catch (e) {
