@@ -29,17 +29,17 @@ class _BlogPageState extends State<BlogPage> {
       appBar: AppBar(
         centerTitle: true,
         title: const Text('Blog App'),
-        actions: [
-          IconButton(
-            onPressed: () {
-              Navigator.push(
-                context,
-                AddNewBlogPage.router(),
-              );
-            },
-            icon: const Icon(CupertinoIcons.add_circled),
-          ),
-        ],
+        // actions: [
+        //   IconButton(
+        //     onPressed: () {
+        //       Navigator.push(
+        //         context,
+        //         AddNewBlogPage.router(),
+        //       );
+        //     },
+        //     icon: const Icon(CupertinoIcons.add_circled),
+        //   ),
+        // ],
       ),
       body: BlocConsumer<BlogBloc, BlogState>(
         listener: (context, state) {
@@ -67,6 +67,16 @@ class _BlogPageState extends State<BlogPage> {
           }
           return const SizedBox();
         },
+      ),
+      floatingActionButtonAnimator: FloatingActionButtonAnimator.scaling,
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          Navigator.push(
+            context,
+            AddNewBlogPage.router(),
+          );
+        },
+        child: const Icon(CupertinoIcons.add_circled),
       ),
     );
   }

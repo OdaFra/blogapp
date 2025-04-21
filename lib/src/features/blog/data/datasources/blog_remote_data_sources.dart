@@ -47,6 +47,7 @@ class BlogRemoteDataSourceImpl implements BlogRemoteDataSource {
             blog.id,
           );
     } on StorageException catch (e) {
+      print('Error: ${e.message}');
       throw ServerException(message: e.message);
     } catch (e) {
       throw ServerException(message: e.toString());

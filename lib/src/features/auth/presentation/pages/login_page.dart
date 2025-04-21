@@ -76,13 +76,16 @@ class _LoginPageState extends State<LoginPage>
               if (state is AuthFailure) {
                 showSnackBar(context, state.message);
               } else if (state is AuthSuccess) {
-                Navigator.pushNamedAndRemoveUntil(
+                Navigator.pushAndRemoveUntil(
                     context, BlogPage.route(), (route) => false);
               }
             },
             builder: (context, state) {
               if (state is AuthLoading) {
-                return const Center(child: Loader());
+                return SizedBox(
+                  height: MediaQuery.of(context).size.height,
+                  child: const Center(child: Loader()),
+                );
               }
               return ConstrainedBox(
                 constraints: BoxConstraints(
@@ -127,13 +130,13 @@ class _LoginPageState extends State<LoginPage>
                       ),
                       const SizedBox(height: 30),
                       AuthField(
-                        hinTex: 'correo electrónico',
+                        hinTex: 'Correo electrónico',
                         controller: emailController,
                         isEmail: true,
                       ),
                       const SizedBox(height: 15),
                       AuthField(
-                        hinTex: 'contraseña',
+                        hinTex: 'Contraseña',
                         controller: passwordController,
                         isObscureText: true,
                         isPassword: true,
@@ -156,7 +159,7 @@ class _LoginPageState extends State<LoginPage>
                             Navigator.push(context, SignUpPage.route()),
                         child: RichText(
                           text: TextSpan(
-                            text: "¿Ya tienes una cuenta?",
+                            text: "¿No tienes una cuenta?",
                             style: Theme.of(context).textTheme.titleMedium,
                             children: [
                               TextSpan(
