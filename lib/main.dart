@@ -49,7 +49,7 @@ class _MyAppState extends State<MyApp> {
         },
         builder: (context, isLoggedIn) {
           if (isLoggedIn) {
-            return const BlogPage();
+            return const BlogListPage();
           }
           return const LoginPage();
         },

@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:blogapp/src/core/common/cubits/app_user/app_user_cubit.dart';
 import 'package:blogapp/src/core/common/widgets/loader.dart';
 import 'package:blogapp/src/core/constants/constants.dart';
+import 'package:blogapp/src/core/utils/image_handler.dart';
 import 'package:blogapp/src/core/utils/show_snackbar.dart';
 import 'package:blogapp/src/features/blog/presentation/bloc/blog_bloc.dart';
 import 'package:blogapp/src/features/blog/presentation/page/blog_page.dart';
@@ -12,7 +13,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../../core/theme/theme.dart';
-import '../../../../core/utils/pick_image.dart';
 
 class AddNewBlogPage extends StatefulWidget {
   static router() =>
@@ -30,12 +30,13 @@ class _AddNewBlogPageState extends State<AddNewBlogPage> {
   final formKey = GlobalKey<FormState>();
   final List<String> selectTopics = [];
   File? image;
+  bool isUploading = false;
 
-  void selectImage() async {
-    final pickedImage = await pickImage();
-    if (pickedImage != null) {
+  Future<void> selectImage() async {
+    final selectedImage = await ImageHandler.selectAndCropImage(context);
+    if (selectedImage != null) {
       setState(() {
-        image = pickedImage;
+        image = selectedImage;
       });
     }
   }
@@ -51,7 +52,7 @@ class _AddNewBlogPageState extends State<AddNewBlogPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Add New Blog'),
+        title: const Text('Agregar un nuevo blog'),
         actions: [
           IconButton(
             onPressed: _uploadBlog,
@@ -62,19 +63,34 @@ class _AddNewBlogPageState extends State<AddNewBlogPage> {
       body: BlocConsumer<BlogBloc, BlogState>(
         listener: (context, state) {
           if (state is BlogFailure) {
+            setState(() => isUploading = false);
             showSnackBar(context, state.error);
           } else if (state is BlogUploadSuccess) {
-            Navigator.pushAndRemoveUntil(
-              context,
-              BlogPage.route(),
-              (route) => false,
-            );
+            // Mostrar feedback antes de navegar
+            showSnackBar(context, '¡Blog publicado con éxito!');
+            Future.delayed(const Duration(milliseconds: 500), () {
+              Navigator.pushAndRemoveUntil(
+                context,
+                BlogListPage.route(),
+                (route) => false,
+              );
+            });
           }
         },
         builder: (context, state) {
-          if (state is BlogLoading) {
+          if (isUploading || state is BlogLoading) {
             return const Center(
-              child: Loader(),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Loader(),
+                  SizedBox(height: 20),
+                  Text(
+                    'Publicando tu blog...',
+                    style: TextStyle(fontSize: 16),
+                  ),
+                ],
+              ),
             );
           }
           return SingleChildScrollView(
@@ -87,14 +103,18 @@ class _AddNewBlogPageState extends State<AddNewBlogPage> {
                     image != null
                         ? GestureDetector(
                             onTap: selectImage,
-                            child: SizedBox(
-                              height: 150,
-                              width: double.infinity,
-                              child: ClipRRect(
-                                borderRadius: BorderRadius.circular(10),
-                                child: Image.file(
-                                  image!,
-                                  fit: BoxFit.cover,
+                            child: Center(
+                              child: SizedBox(
+                                height:
+                                    MediaQuery.of(context).size.height * 0.45,
+                                width: double.infinity,
+                                child: ClipRRect(
+                                  borderRadius: BorderRadius.circular(10),
+                                  child: Image.file(
+                                    image!,
+                                    fit: BoxFit.cover,
+                                    alignment: Alignment.center,
+                                  ),
                                 ),
                               ),
                             ),
@@ -116,7 +136,7 @@ class _AddNewBlogPageState extends State<AddNewBlogPage> {
                                     Icon(Icons.folder_open_outlined, size: 50),
                                     SizedBox(height: 15),
                                     Text(
-                                      'Select your image',
+                                      'Selecciona una imagen',
                                       style: TextStyle(fontSize: 15),
                                     )
                                   ],
@@ -145,7 +165,7 @@ class _AddNewBlogPageState extends State<AddNewBlogPage> {
                                     label: Text(e),
                                     color: selectTopics.contains(e)
                                         ? WidgetStateProperty.all(
-                                            ColorTheme.gradient2)
+                                            ColorTheme.gradient1)
                                         : WidgetStateProperty.all(
                                             ColorTheme.backgroundColor),
                                     side: const BorderSide(
@@ -158,12 +178,11 @@ class _AddNewBlogPageState extends State<AddNewBlogPage> {
                       ),
                     ),
                     const SizedBox(height: 15),
-                    BlogEditor(
-                        controller: titleControler, hintext: 'Blog Title'),
+                    BlogEditor(controller: titleControler, hintext: 'Titulo'),
                     const SizedBox(height: 10),
                     BlogEditor(
                       controller: contentControler,
-                      hintext: 'Blog content',
+                      hintext: 'Contenido',
                       minLines: 5,
                     ),
                   ],
@@ -177,17 +196,30 @@ class _AddNewBlogPageState extends State<AddNewBlogPage> {
   }
 
   void _uploadBlog() {
-    if (formKey.currentState!.validate() &&
-        selectTopics.isNotEmpty &&
-        image != null) {
-      final posterId = context.read<AppUserCubit>().state as AppUserLoggedIn;
-      context.read<BlogBloc>().add(BlogUpload(
-            posterId: posterId.user.id,
-            title: titleControler.text.trim(),
-            content: contentControler.text.trim(),
-            image: image!,
-            topics: selectTopics,
-          ));
+    if (!formKey.currentState!.validate()) {
+      showSnackBar(context, 'Por favor completa todos los campos requeridos');
+      return;
     }
+
+    if (selectTopics.isEmpty) {
+      showSnackBar(context, 'Por favor selecciona al menos un topico');
+      return;
+    }
+
+    if (image == null) {
+      showSnackBar(context, 'Por favor selecciona una imagen');
+      return;
+    }
+
+    setState(() => isUploading = true);
+
+    final posterId = context.read<AppUserCubit>().state as AppUserLoggedIn;
+    context.read<BlogBloc>().add(BlogUpload(
+          posterId: posterId.user.id,
+          title: titleControler.text.trim(),
+          content: contentControler.text.trim(),
+          image: image!,
+          topics: selectTopics,
+        ));
   }
 }
