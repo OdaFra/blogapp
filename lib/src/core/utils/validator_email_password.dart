@@ -9,11 +9,14 @@ class ValidatorEmailPassword {
   }
 
   static bool isValidPassword(String password) {
-    if (password.length < 6) return false;
+    return password.length > 6 && hasSpecialCharacter(password);
+  }
 
-    final hasUpperCase = RegExp(r'[A-Z]').hasMatch(password);
-    final hasSpecialChar = RegExp(r'[!@#$%^&*(),.?":{}|<>]').hasMatch(password);
+  static bool hasSpecialCharacter(String password) {
+    return RegExp(r'[!@#$%^&*(),.?":{}|<>]').hasMatch(password);
+  }
 
-    return hasUpperCase && hasSpecialChar;
+  static bool hasMinLength(String password) {
+    return password.length > 6;
   }
 }
