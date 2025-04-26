@@ -67,7 +67,8 @@ class _AddNewBlogPageState extends State<AddNewBlogPage> {
             showSnackBar(context, state.error);
           } else if (state is BlogUploadSuccess) {
             // Mostrar feedback antes de navegar
-            showSnackBar(context, '¡Blog publicado con éxito!');
+            showSnackBar(context, '¡Blog publicado con éxito!',
+                backgroundColor: Colors.green);
             Future.delayed(const Duration(milliseconds: 500), () {
               Navigator.pushAndRemoveUntil(
                 context,

@@ -100,11 +100,19 @@ void _initBlog() {
     ..registerFactory(() => GetAllBlogsUseCase(
           blogRepository: serviceLocator(),
         ))
+    ..registerFactory(() => DeleteBlogUseCase(
+          blogRepository: serviceLocator(),
+        ))
+    ..registerFactory(() => EditBlogUseCase(
+          blogRepository: serviceLocator(),
+        ))
     //==>Blocs
     ..registerLazySingleton(
       () => BlogBloc(
         uploadBlogUseCase: serviceLocator(),
         getAllBlogsUseCase: serviceLocator(),
+        deleteBlogUseCase: serviceLocator(),
+        editBlogUseCase: serviceLocator(),
       ),
     );
 }

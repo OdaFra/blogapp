@@ -73,4 +73,65 @@ class BlogRepositryImpl implements BlogRepository {
       );
     }
   }
+
+  @override
+  Future<Either<Failure, void>> deleteBlog(String blogId) async {
+    try {
+      if (!await connectionCheck.isConnected) {
+        return left(Failure(Constants.noConnectionErrorMessage));
+      }
+
+      await remoteDataSource.deleteBlog(blogId);
+      localDataSource.deleteLocalBlog(blogId);
+
+      return right(null);
+    } on ServerException catch (e) {
+      return left(Failure(e.message));
+    }
+  }
+
+  @override
+  Future<Either<Failure, Blog>> editBlog({
+    required String blogId,
+    File? image,
+    required String title,
+    required String content,
+    required List<String> topics,
+  }) async {
+    try {
+      if (!await connectionCheck.isConnected) {
+        return left(Failure(Constants.noConnectionErrorMessage));
+      }
+
+      String? imageUrl;
+      if (image != null) {
+        imageUrl = await remoteDataSource.uploadBlogImage(
+          image: image,
+          blog: BlogModel(
+            id: blogId,
+            posterId: '', // No necesario para la imagen
+            title: title,
+            content: content,
+            imageUrl: '',
+            topics: topics,
+            updatedAt: DateTime.now(),
+          ),
+        );
+      }
+
+      final updatedBlog = await remoteDataSource.editBlog(
+        blogId: blogId,
+        title: title,
+        content: content,
+        topics: topics,
+        imageUrl: imageUrl,
+      );
+
+      localDataSource.updateLocalBlog(updatedBlog);
+
+      return right(updatedBlog);
+    } on ServerException catch (e) {
+      return left(Failure(e.message));
+    }
+  }
 }

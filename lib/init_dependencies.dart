@@ -11,6 +11,8 @@ import 'package:blogapp/src/features/blog/data/datasources/blog_local_data_sourc
 import 'package:blogapp/src/features/blog/data/datasources/blog_remote_data_sources.dart';
 import 'package:blogapp/src/features/blog/data/repository/blog_repositry_impl.dart';
 import 'package:blogapp/src/features/blog/domain/repository/blog_repository.dart';
+import 'package:blogapp/src/features/blog/domain/usescases/delete_blog.dart';
+import 'package:blogapp/src/features/blog/domain/usescases/edit_blog.dart';
 import 'package:blogapp/src/features/blog/domain/usescases/get_all_blogs.dart';
 import 'package:blogapp/src/features/blog/domain/usescases/upload_blog.dart';
 import 'package:blogapp/src/features/blog/presentation/bloc/blog_bloc.dart';

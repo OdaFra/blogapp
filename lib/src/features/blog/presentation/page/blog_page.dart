@@ -23,6 +23,7 @@ class BlogListPage extends StatefulWidget {
 class _BlogListPageState extends State<BlogListPage> {
   String selectedTopic = '';
   List<Blog> allBlogs = [];
+  String _sortOrder = 'recent'; // 'recent' o 'oldest'
 
   @override
   void initState() {
@@ -32,6 +33,21 @@ class _BlogListPageState extends State<BlogListPage> {
 
   void _fetchBlogs() {
     context.read<BlogBloc>().add(BlogFecthAllBlogs());
+  }
+
+  List<Blog> _sortBlogs(List<Blog> blogs) {
+    final sortedBlogs = List<Blog>.from(
+        blogs); // Crear una copia para no modificar la lista original
+
+    if (_sortOrder == 'recent') {
+      sortedBlogs.sort((a, b) =>
+          b.updatedAt.compareTo(a.updatedAt)); // Más recientes primero
+    } else {
+      sortedBlogs.sort(
+          (a, b) => a.updatedAt.compareTo(b.updatedAt)); // Más antiguos primero
+    }
+
+    return sortedBlogs;
   }
 
   @override
@@ -46,21 +62,42 @@ class _BlogListPageState extends State<BlogListPage> {
             onPressed: _fetchBlogs,
             tooltip: 'Recargar blogs',
           ),
+          PopupMenuButton<String>(
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(10.0),
+            ),
+            onSelected: (value) {
+              setState(() {
+                _sortOrder = value;
+              });
+            },
+            itemBuilder: (context) => [
+              const PopupMenuItem(
+                value: 'recent',
+                child: Text('Recientes'),
+              ),
+              const PopupMenuItem(
+                value: 'oldest',
+                child: Text('Antiguos'),
+              ),
+            ],
+            icon: const Icon(CupertinoIcons.sort_down),
+          ),
         ],
       ),
       body: BlocConsumer<BlogBloc, BlogState>(
         listener: (context, state) {
           if (state is BlogFailure) {
             showSnackBar(context, state.error);
+          } else if (state is BlogDeleteSuccess) {
+            showSnackBar(context, 'Blog eliminado con éxito');
           }
         },
         builder: (context, state) {
-          // Actualizar lista cuando llegan nuevos datos
           if (state is BlogDisplaySuccess) {
-            allBlogs = state.blogs;
+            allBlogs = _sortBlogs(state.blogs);
           }
 
-          // Filtrar blogs por topic seleccionado
           final filteredBlogs = selectedTopic.isEmpty
               ? allBlogs
               : allBlogs
@@ -69,17 +106,24 @@ class _BlogListPageState extends State<BlogListPage> {
 
           return Column(
             children: [
-              // Selector de topics
+              // Selector de topics y ordenación
               Padding(
-                padding: const EdgeInsets.symmetric(vertical: 8.0),
-                child: TopicsTabBar(
-                  allTopics: Constants.topics,
-                  selectedTopic: selectedTopic,
-                  onTopicSelected: (topic) {
-                    setState(() {
-                      selectedTopic = topic;
-                    });
-                  },
+                padding:
+                    const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: TopicsTabBar(
+                        allTopics: Constants.topics,
+                        selectedTopic: selectedTopic,
+                        onTopicSelected: (topic) {
+                          setState(() {
+                            selectedTopic = topic;
+                          });
+                        },
+                      ),
+                    ),
+                  ],
                 ),
               ),
               // Lista de blogs
@@ -157,6 +201,9 @@ class _BlogListPageState extends State<BlogListPage> {
           return BlogCard(
             blog: blog,
             color: index % 2 == 0 ? ColorTheme.gradient1 : ColorTheme.gradient2,
+            onDelete: () {
+              context.read<BlogBloc>().add(DeleteBlog(blog.id));
+            },
           );
         },
       );

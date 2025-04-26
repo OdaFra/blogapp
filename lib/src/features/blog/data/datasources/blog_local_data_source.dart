@@ -4,6 +4,8 @@ import 'package:hive/hive.dart';
 abstract interface class BlogLocalDataSource {
   void uploadLocalBlog({required List<BlogModel> blogs});
   List<BlogModel> loadBlogs();
+  void deleteLocalBlog(String blogId);
+  void updateLocalBlog(BlogModel blog);
 }
 
 class BlogLocalDataSourceImpl implements BlogLocalDataSource {
@@ -33,5 +35,15 @@ class BlogLocalDataSourceImpl implements BlogLocalDataSource {
         );
       }
     });
+  }
+
+  @override
+  void deleteLocalBlog(String blogId) {
+    box.delete(blogId);
+  }
+
+  @override
+  void updateLocalBlog(BlogModel blog) {
+    box.put(blog.id, blog.toJson());
   }
 }
