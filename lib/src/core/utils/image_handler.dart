@@ -1,11 +1,13 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
 
-import '../theme/theme.dart'; // Asegúrate que la ruta es correcta para ColorTheme
-import 'show_snackbar.dart'; // Para mostrar errores
+import '../theme/theme.dart';
+import 'show_snackbar.dart';
 
 class ImageHandler {
   static final ImagePicker _picker = ImagePicker();
@@ -45,7 +47,7 @@ class ImageHandler {
         return File(pickedFile.path);
       }
     } catch (e) {
-      throw Exception('Error picking image: $e');
+      throw Exception('Error al obtener imagen: $e');
     }
     return null;
   }
@@ -81,7 +83,7 @@ class ImageHandler {
       if (croppedImage == null) return null;
       return File(croppedImage.path);
     } catch (e) {
-      debugPrint('Error cropping image: $e');
+      debugPrint('Error al recortar imagen: $e');
       return null;
     }
   }

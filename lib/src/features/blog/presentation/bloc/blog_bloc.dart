@@ -64,7 +64,7 @@ class BlogBloc extends Bloc<BlogEvent, BlogState> {
       (failure) => emit(BlogFailure(failure.message)),
       (_) {
         emit(BlogDeleteSuccess());
-        add(BlogFecthAllBlogs()); // Recargar la lista después de eliminar
+        add(BlogFecthAllBlogs());
       },
     );
   }
@@ -77,11 +77,12 @@ class BlogBloc extends Bloc<BlogEvent, BlogState> {
       content: event.content,
       topics: event.topics,
     ));
+
     result.fold(
       (failure) => emit(BlogFailure(failure.message)),
       (blog) {
         emit(BlogEditSuccess(blog));
-        add(BlogFecthAllBlogs()); // Recargar la lista después de editar
+        add(BlogFecthAllBlogs());
       },
     );
   }

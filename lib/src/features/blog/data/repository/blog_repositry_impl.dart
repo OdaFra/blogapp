@@ -114,20 +114,26 @@ class BlogRepositryImpl implements BlogRepository {
 
       String? imageUrl;
       if (image != null) {
+        // Obtener blog actual para URL de imagen existente
+        final currentBlog = await remoteDataSource.getBlogById(blogId);
+
+        // Subir nueva imagen (maneja eliminación de la anterior)
         imageUrl = await remoteDataSource.uploadBlogImage(
           image: image,
           blog: BlogModel(
             id: blogId,
-            posterId: '', // No necesario para la imagen
+            posterId: '',
             title: title,
             content: content,
             imageUrl: '',
             topics: topics,
             updatedAt: DateTime.now(),
           ),
+          currentImageUrl: currentBlog?.imageUrl,
         );
       }
 
+      // Actualizar blog con nueva URL de imagen (incluye cache busting)
       final updatedBlog = await remoteDataSource.editBlog(
         blogId: blogId,
         title: title,
@@ -136,6 +142,7 @@ class BlogRepositryImpl implements BlogRepository {
         imageUrl: imageUrl,
       );
 
+      // Limpiar caché local
       localDataSource.updateLocalBlog(updatedBlog);
 
       return right(updatedBlog);

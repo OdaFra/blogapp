@@ -2,19 +2,20 @@ import 'package:blogapp/src/core/constants/constants.dart';
 import 'package:blogapp/src/core/theme/color_theme.dart';
 import 'package:blogapp/src/core/utils/calculate_reading_time.dart';
 import 'package:blogapp/src/features/blog/domain/entities/blog.dart';
+import 'package:blogapp/src/features/blog/presentation/page/add_new_blog_page.dart';
 import 'package:blogapp/src/features/blog/presentation/page/blog_viewer_page.dart';
 import 'package:flutter/material.dart';
 
 class BlogCard extends StatelessWidget {
   final Blog blog;
   final Color color;
-  final VoidCallback onDelete; // Nueva propiedad para manejar la eliminación
+  final VoidCallback onDelete;
 
   const BlogCard({
     super.key,
     required this.blog,
     required this.color,
-    required this.onDelete, // Añade esta línea
+    required this.onDelete,
   });
 
   @override
@@ -42,52 +43,57 @@ class BlogCard extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      blog.title,
-                      style: const TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                        height: 1.2,
+                Flexible(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Flexible(
+                        // Título flexible
+                        child: Text(
+                          blog.title,
+                          style: const TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                            height: 1.2,
+                          ),
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                        ),
                       ),
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                    const SizedBox(height: 12),
-                    SingleChildScrollView(
-                      scrollDirection: Axis.horizontal,
-                      child: Row(
-                        children: blog.topics
-                            .map(
-                              (topic) => Padding(
-                                padding: const EdgeInsets.only(right: 6.0),
-                                child: Chip(
-                                  label: Text(
-                                    topic,
-                                    style: const TextStyle(
-                                      fontSize: 12,
-                                      color: Colors.white,
+                      const SizedBox(height: 8),
+                      SingleChildScrollView(
+                        scrollDirection: Axis.horizontal,
+                        child: Row(
+                          children: blog.topics
+                              .map(
+                                (topic) => Padding(
+                                  padding: const EdgeInsets.only(right: 6.0),
+                                  child: Chip(
+                                    label: Text(
+                                      topic,
+                                      style: const TextStyle(
+                                        fontSize: 12,
+                                        color: Colors.white,
+                                      ),
+                                    ),
+                                    backgroundColor:
+                                        Constants.topicColors[topic] ??
+                                            Colors.grey[700],
+                                    side: const BorderSide(
+                                      color: ColorTheme.borderColor,
+                                      width: 0.5,
+                                    ),
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(16),
                                     ),
                                   ),
-                                  backgroundColor:
-                                      Constants.topicColors[topic] ??
-                                          Colors.grey[700],
-                                  side: const BorderSide(
-                                    color: ColorTheme.borderColor,
-                                    width: 0.5,
-                                  ),
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(16),
-                                  ),
                                 ),
-                              ),
-                            )
-                            .toList(),
+                              )
+                              .toList(),
+                        ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
                 Text(
                   '${calculateReadingTime(blog.content)} min read',
@@ -98,7 +104,6 @@ class BlogCard extends StatelessWidget {
                 ),
               ],
             ),
-            // Botón de eliminar en la esquina superior derecha
             Positioned(
               top: 0,
               right: 0,
@@ -111,18 +116,24 @@ class BlogCard extends StatelessWidget {
                   if (value == 'delete') {
                     _showDeleteConfirmationDialog(context);
                   } else if (value == 'edit') {
-                    // Lógica para editar
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => AddNewBlogPage.edit(blog: blog),
+                      ),
+                    );
                   }
                 },
                 itemBuilder: (context) => [
-                  // const PopupMenuItem(
-                  //   value: 'edit',
-                  //   child: Text('Editar'),
-                  // ),
+                  const PopupMenuItem(
+                    value: 'edit',
+                    child: Text('Editar',
+                        style: TextStyle(color: ColorTheme.successColor)),
+                  ),
                   const PopupMenuItem(
                     value: 'delete',
-                    child:
-                        Text('Eliminar', style: TextStyle(color: Colors.red)),
+                    child: Text('Eliminar',
+                        style: TextStyle(color: ColorTheme.errorColor)),
                   ),
                 ],
               ),
@@ -148,12 +159,6 @@ class BlogCard extends StatelessWidget {
             onPressed: () {
               Navigator.pop(context);
               onDelete();
-              // ScaffoldMessenger.of(context).showSnackBar(
-              //   const SnackBar(
-              //     content: Text('Blog eliminado correctamente'),
-              //     duration: Duration(seconds: 2),
-              //   ),
-              // );
             },
             child: const Text(
               'Eliminar',
