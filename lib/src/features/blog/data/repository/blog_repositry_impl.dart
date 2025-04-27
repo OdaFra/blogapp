@@ -81,7 +81,16 @@ class BlogRepositryImpl implements BlogRepository {
         return left(Failure(Constants.noConnectionErrorMessage));
       }
 
-      await remoteDataSource.deleteBlog(blogId);
+      // 1. Obtener el blog para extraer el image_url
+      final blog = await remoteDataSource.getBlogById(blogId);
+
+      // 2. Eliminar usando el image_url si existe
+      await remoteDataSource.deleteBlog(
+        blogId,
+        imagePath: blog?.imageUrl,
+      );
+
+      // 3. Eliminar de la caché local
       localDataSource.deleteLocalBlog(blogId);
 
       return right(null);

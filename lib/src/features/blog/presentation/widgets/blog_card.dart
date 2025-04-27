@@ -37,7 +37,6 @@ class BlogCard extends StatelessWidget {
           ],
         ),
         child: Stack(
-          // Usamos Stack para superponer el botón de eliminar
           children: [
             Column(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -148,13 +147,13 @@ class BlogCard extends StatelessWidget {
           TextButton(
             onPressed: () {
               Navigator.pop(context);
-              onDelete(); // Ejecuta la función de eliminación
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  content: Text('Blog eliminado correctamente'),
-                  duration: Duration(seconds: 2),
-                ),
-              );
+              onDelete();
+              // ScaffoldMessenger.of(context).showSnackBar(
+              //   const SnackBar(
+              //     content: Text('Blog eliminado correctamente'),
+              //     duration: Duration(seconds: 2),
+              //   ),
+              // );
             },
             child: const Text(
               'Eliminar',

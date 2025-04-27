@@ -23,7 +23,7 @@ class BlogListPage extends StatefulWidget {
 class _BlogListPageState extends State<BlogListPage> {
   String selectedTopic = '';
   List<Blog> allBlogs = [];
-  String _sortOrder = 'recent'; // 'recent' o 'oldest'
+  String _sortOrder = 'recent';
 
   @override
   void initState() {
@@ -37,7 +37,7 @@ class _BlogListPageState extends State<BlogListPage> {
 
   List<Blog> _sortBlogs(List<Blog> blogs) {
     final sortedBlogs = List<Blog>.from(
-        blogs); // Crear una copia para no modificar la lista original
+        blogs); // Crear una copia de la lista original para no modificarla directamente
 
     if (_sortOrder == 'recent') {
       sortedBlogs.sort((a, b) =>

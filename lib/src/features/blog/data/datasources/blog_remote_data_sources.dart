@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:blogapp/src/core/error/exceptions.dart';
 import 'package:blogapp/src/features/blog/data/models/blog_model.dart';
+import 'package:flutter/foundation.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 abstract interface class BlogRemoteDataSource {
@@ -11,7 +12,8 @@ abstract interface class BlogRemoteDataSource {
     required BlogModel blog,
   });
   Future<List<BlogModel>> getAllBlogs();
-  Future<void> deleteBlog(String blogId);
+  Future<void> deleteBlog(String blogId, {String? imagePath});
+  Future<BlogModel?> getBlogById(String blogId);
   Future<BlogModel> editBlog({
     required String blogId,
     required String title,
@@ -83,33 +85,35 @@ class BlogRemoteDataSourceImpl implements BlogRemoteDataSource {
   }
 
   @override
-  Future<void> deleteBlog(String blogId) async {
+  Future<void> deleteBlog(String blogId, {String? imagePath}) async {
     try {
-      // 1. Verificar si existe la imagen en el storage
-      try {
-        final files =
-            await supabaseClient.storage.from('blog_images').list(path: blogId);
+      // 1. Eliminar imagen del storage si se proporciona path
+      if (imagePath != null) {
+        try {
+          // Extraer el nombre del archivo de la URL
+          final uri = Uri.parse(imagePath);
+          final fileName = uri.pathSegments.last;
 
-        if (files.isNotEmpty) {
-          await supabaseClient.storage.from('blog_images').remove([blogId]);
+          await supabaseClient.storage.from('blog_images').remove([fileName]);
 
-          print('Imagen eliminada del storage: $blogId');
-        }
-      } on StorageException catch (e) {
-        if (!e.message.contains('not found')) {
-          print('Error al eliminar imagen: ${e.message}');
-          throw ServerException(
-              message: 'Error al eliminar imagen: ${e.message}');
+          debugPrint('Imagen eliminada del storage: $fileName');
+        } on StorageException catch (e) {
+          if (!e.message.toLowerCase().contains('not found')) {
+            rethrow;
+          }
+          // Archivo no encontrado, continuar normalmente
         }
       }
 
+      // 2. Eliminar registro de la tabla
       await supabaseClient.from('blogs').delete().eq('id', blogId);
-      print('Blog eliminado de la tabla: $blogId');
+      debugPrint('Blog eliminado de la tabla: $blogId');
     } on PostgrestException catch (e) {
       throw ServerException(message: e.message);
+    } on StorageException catch (e) {
+      throw ServerException(message: 'Error al eliminar imagen: ${e.message}');
     } catch (e) {
-      throw ServerException(
-          message: 'Error al eliminar el blog: ${e.toString()}');
+      throw ServerException(message: 'Error al eliminar blog: ${e.toString()}');
     }
   }
 
@@ -140,4 +144,50 @@ class BlogRemoteDataSourceImpl implements BlogRemoteDataSource {
       throw ServerException(message: e.message);
     }
   }
+
+  @override
+  Future<BlogModel?> getBlogById(String blogId) async {
+    try {
+      final response = await supabaseClient
+          .from('blogs')
+          .select()
+          .eq('id', blogId)
+          .maybeSingle();
+
+      return response != null ? BlogModel.fronJsom(response) : null;
+    } on PostgrestException catch (e) {
+      throw ServerException(message: e.message);
+    }
+  }
+
+  // @override
+  // Future<void> deleteBlog(String blogId) async {
+  //   try {
+  //     // 1. Verificar si existe la imagen en el storage
+  //     try {
+  //       final files =
+  //           await supabaseClient.storage.from('blog_images').list(path: blogId);
+
+  //       if (files.isNotEmpty) {
+  //         await supabaseClient.storage.from('blog_images').remove([blogId]);
+
+  //         debugPrint('Imagen eliminada del storage: $blogId');
+  //       }
+  //     } on StorageException catch (e) {
+  //       if (!e.message.contains('not found')) {
+  //         debugPrint('Error al eliminar imagen: ${e.message}');
+  //         throw ServerException(
+  //             message: 'Error al eliminar imagen: ${e.message}');
+  //       }
+  //     }
+
+  //     await supabaseClient.from('blogs').delete().eq('id', blogId);
+  //     debugPrint('Blog eliminado de la tabla: $blogId');
+  //   } on PostgrestException catch (e) {
+  //     throw ServerException(message: e.message);
+  //   } catch (e) {
+  //     throw ServerException(
+  //         message: 'Error al eliminar el blog: ${e.toString()}');
+  //   }
+  // }
 }
