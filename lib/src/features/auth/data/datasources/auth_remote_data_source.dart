@@ -1,4 +1,5 @@
 import 'package:blogapp/src/core/error/error.dart';
+import 'package:flutter/foundation.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../models/user_model.dart';
@@ -16,6 +17,7 @@ abstract interface class AuthRemoteDataSource {
     required String password,
   });
   Future<UserModel?> getCurrentUser();
+  Future<void> logout();
 }
 
 class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
@@ -92,5 +94,20 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
       throw ServerException(message: e.toString());
     }
     return null;
+  }
+
+  @override
+  Future<void> logout() async {
+    try {
+      await supabaseClient.auth.signOut();
+      // Limpiar cualquier dato local persistente
+      final session = supabaseClient.auth.currentSession;
+      if (session != null) {
+        throw Exception('La sesión no se cerró correctamente');
+      }
+    } catch (e) {
+      debugPrint('Error al cerrar sesión: $e');
+      throw ServerException(message: 'Error al cerrar sesión');
+    }
   }
 }

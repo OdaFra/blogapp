@@ -1,7 +1,10 @@
+import 'package:blogapp/src/core/common/cubits/app_user/app_user_cubit.dart';
 import 'package:blogapp/src/core/common/widgets/loader.dart';
 import 'package:blogapp/src/core/constants/constants.dart';
 import 'package:blogapp/src/core/theme/color_theme.dart';
 import 'package:blogapp/src/core/utils/show_snackbar.dart';
+import 'package:blogapp/src/features/auth/presentation/bloc/auth_bloc.dart';
+import 'package:blogapp/src/features/auth/presentation/pages/pages.dart';
 import 'package:blogapp/src/features/blog/domain/entities/blog.dart';
 import 'package:blogapp/src/features/blog/presentation/bloc/blog_bloc.dart';
 import 'package:blogapp/src/features/blog/presentation/page/add_new_blog_page.dart';
@@ -53,6 +56,7 @@ class _BlogListPageState extends State<BlogListPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      drawer: _buildDrawer(context),
       appBar: AppBar(
         centerTitle: true,
         title: const Text('Blogs'),
@@ -208,5 +212,76 @@ class _BlogListPageState extends State<BlogListPage> {
         },
       );
     }
+  }
+
+  Widget _buildDrawer(BuildContext context) {
+    return BlocBuilder<AppUserCubit, AppUserState>(
+      builder: (context, state) {
+        final user = state is AppUserLoggedIn ? state.user : null;
+
+        return Drawer(
+          backgroundColor: ColorTheme.backgroundColor,
+          child: Column(
+            children: [
+              UserAccountsDrawerHeader(
+                decoration: const BoxDecoration(
+                  color: ColorTheme.gradient1,
+                ),
+                accountName: Text(user?.name ?? 'Invitado'),
+                accountEmail: Text(user?.email ?? 'No has iniciado sesión'),
+                currentAccountPicture: CircleAvatar(
+                  backgroundColor: ColorTheme.backgroundColor,
+                  child: Text(
+                    user?.email.isNotEmpty == true
+                        ? user!.email[0].toUpperCase()
+                        : '?',
+                    style: const TextStyle(fontSize: 24),
+                  ),
+                ),
+              ),
+              const Spacer(),
+              ListTile(
+                leading: const Icon(Icons.exit_to_app),
+                title: const Text('Cerrar sesión'),
+                onTap: () {
+                  Navigator.pop(context);
+                  _logout(context);
+                },
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  void _logout(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Cerrar sesión'),
+        content: const Text('¿Estás seguro de que quieres cerrar sesión?'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Cancelar'),
+          ),
+          TextButton(
+            onPressed: () async {
+              Navigator.pop(context); // Cierra el diálogo
+              context.read<AuthBloc>().add(AuthLogout());
+              // Navegar al login y limpiar stack de navegación
+              Navigator.pushAndRemoveUntil(
+                context,
+                MaterialPageRoute(builder: (_) => const LoginPage()),
+                (route) => false,
+              );
+            },
+            child: const Text('Cerrar sesión',
+                style: TextStyle(color: Colors.red)),
+          ),
+        ],
+      ),
+    );
   }
 }
