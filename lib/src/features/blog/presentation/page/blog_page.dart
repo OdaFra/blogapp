@@ -1,13 +1,10 @@
-import 'package:blogapp/src/core/common/cubits/app_user/app_user_cubit.dart';
-import 'package:blogapp/src/core/common/widgets/loader.dart';
-import 'package:blogapp/src/core/constants/constants.dart';
-import 'package:blogapp/src/core/theme/color_theme.dart';
-import 'package:blogapp/src/core/utils/show_snackbar.dart';
+import 'package:blogapp/src/core/core.dart';
 import 'package:blogapp/src/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:blogapp/src/features/auth/presentation/pages/pages.dart';
 import 'package:blogapp/src/features/blog/domain/entities/blog.dart';
 import 'package:blogapp/src/features/blog/presentation/bloc/blog_bloc.dart';
 import 'package:blogapp/src/features/blog/presentation/page/add_new_blog_page.dart';
+import 'package:blogapp/src/features/blog/presentation/page/blog_viewer_page.dart';
 import 'package:blogapp/src/features/blog/presentation/widgets/blog_card.dart';
 import 'package:blogapp/src/features/blog/presentation/widgets/blog_tabbar.dart';
 import 'package:flutter/cupertino.dart';
@@ -143,7 +140,7 @@ class _BlogListPageState extends State<BlogListPage> {
         onPressed: () {
           Navigator.push(
             context,
-            AddNewBlogPage.router(),
+            AppTransitions.sharedAxisTransition(const AddNewBlogPage()),
           ).then((_) => _fetchBlogs());
         },
         child: const Icon(CupertinoIcons.add_circled),
@@ -202,12 +199,19 @@ class _BlogListPageState extends State<BlogListPage> {
         itemCount: blogs.length,
         itemBuilder: (context, index) {
           final blog = blogs[index];
-          return BlogCard(
-            blog: blog,
-            color: index % 2 == 0 ? ColorTheme.gradient1 : ColorTheme.gradient2,
-            onDelete: () {
-              context.read<BlogBloc>().add(DeleteBlog(blog.id));
-            },
+          return GestureDetector(
+            onTap: () => Navigator.push(
+              context,
+              AppTransitions.sharedAxisTransition(BlogViewerPage(blog: blog)),
+            ),
+            child: BlogCard(
+              blog: blog,
+              color:
+                  index % 2 == 0 ? ColorTheme.gradient1 : ColorTheme.gradient2,
+              onDelete: () {
+                context.read<BlogBloc>().add(DeleteBlog(blog.id));
+              },
+            ),
           );
         },
       );
@@ -255,7 +259,9 @@ class _BlogListPageState extends State<BlogListPage> {
     );
   }
 
-  void _logout(BuildContext context) {
+  void _logout(BuildContext context) async {
+    final navigator = Navigator.of(context);
+
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
@@ -263,22 +269,30 @@ class _BlogListPageState extends State<BlogListPage> {
         content: const Text('¿Estás seguro de que quieres cerrar sesión?'),
         actions: [
           TextButton(
-            onPressed: () => Navigator.pop(context),
+            onPressed: () => navigator.pop(),
             child: const Text('Cancelar'),
           ),
           TextButton(
             onPressed: () async {
-              Navigator.pop(context); // Cierra el diálogo
-              context.read<AuthBloc>().add(AuthLogout());
-              // Navegar al login y limpiar stack de navegación
-              Navigator.pushAndRemoveUntil(
-                context,
-                MaterialPageRoute(builder: (_) => const LoginPage()),
-                (route) => false,
-              );
+              navigator.pop();
+
+              try {
+                // 1. Disparar el logout a través del Bloc
+                context.read<AuthBloc>().add(AuthLogout());
+
+                // 2. Navegar al login limpiando el stack
+                navigator.pushAndRemoveUntil(
+                  MaterialPageRoute(builder: (_) => const LoginPage()),
+                  (route) => false,
+                );
+
+                showSnackBar(context, 'Sesión cerrada correctamente');
+              } catch (e) {
+                showSnackBar(context, 'Error al cerrar sesión: $e');
+              }
             },
             child: const Text('Cerrar sesión',
-                style: TextStyle(color: Colors.red)),
+                style: TextStyle(color: ColorTheme.errorColor)),
           ),
         ],
       ),

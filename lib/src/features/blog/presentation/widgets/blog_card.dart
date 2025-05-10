@@ -1,6 +1,4 @@
-import 'package:blogapp/src/core/constants/constants.dart';
-import 'package:blogapp/src/core/theme/color_theme.dart';
-import 'package:blogapp/src/core/utils/calculate_reading_time.dart';
+import 'package:blogapp/src/core/core.dart';
 import 'package:blogapp/src/features/blog/domain/entities/blog.dart';
 import 'package:blogapp/src/features/blog/presentation/page/add_new_blog_page.dart';
 import 'package:blogapp/src/features/blog/presentation/page/blog_viewer_page.dart';
@@ -21,7 +19,12 @@ class BlogCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: () => Navigator.push(context, BlogViewerPage.router(blog)),
+      onTap: () {
+        Navigator.push(
+          context,
+          AppTransitions.sharedAxisTransition(BlogViewerPage(blog: blog)),
+        );
+      },
       child: Container(
         height: MediaQuery.of(context).size.height * 0.18,
         margin: const EdgeInsets.all(16).copyWith(bottom: 4),
@@ -118,9 +121,8 @@ class BlogCard extends StatelessWidget {
                   } else if (value == 'edit') {
                     Navigator.push(
                       context,
-                      MaterialPageRoute(
-                        builder: (context) => AddNewBlogPage.edit(blog: blog),
-                      ),
+                      AppTransitions.sharedAxisTransition(
+                          AddNewBlogPage.edit(blog: blog)),
                     );
                   }
                 },

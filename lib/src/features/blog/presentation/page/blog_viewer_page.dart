@@ -1,5 +1,6 @@
 import 'package:blogapp/src/core/constants/constants.dart';
 import 'package:blogapp/src/core/theme/color_theme.dart';
+import 'package:blogapp/src/core/utils/app_transitions.dart';
 import 'package:blogapp/src/core/utils/calculate_reading_time.dart';
 import 'package:blogapp/src/core/utils/format_date.dart';
 import 'package:blogapp/src/features/blog/domain/entities/blog.dart';
@@ -12,8 +13,9 @@ class BlogViewerPage extends StatelessWidget {
     required this.blog,
   });
 
-  static router(Blog blog) =>
-      MaterialPageRoute(builder: (context) => BlogViewerPage(blog: blog));
+  static PageRoute router(Blog blog) {
+    return AppTransitions.sharedAxisTransition(BlogViewerPage(blog: blog));
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -83,7 +85,7 @@ class BlogViewerPage extends StatelessWidget {
                   borderRadius: BorderRadius.circular(12),
                   child: Image.network(
                     blog.imageUrl,
-                    height: MediaQuery.of(context).size.height * 0.45 ,
+                    height: MediaQuery.of(context).size.height * 0.45,
                     width: double.infinity,
                     fit: BoxFit.cover,
                     loadingBuilder: (context, child, loadingProgress) {
