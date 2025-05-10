@@ -20,3 +20,24 @@ final class BlogUpload extends BlogEvent {
 }
 
 final class BlogFecthAllBlogs extends BlogEvent {}
+
+class DeleteBlog extends BlogEvent {
+  final String blogId;
+  DeleteBlog(this.blogId);
+}
+
+class EditBlog extends BlogEvent {
+  final String blogId;
+  final File? image;
+  final String title;
+  final String content;
+  final List<String> topics;
+
+  EditBlog({
+    required this.blogId,
+    this.image,
+    required this.title,
+    required this.content,
+    required this.topics,
+  });
+}

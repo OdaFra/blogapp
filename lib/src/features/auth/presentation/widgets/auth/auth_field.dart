@@ -60,7 +60,11 @@ class _AuthFieldState extends State<AuthField> {
         }
         if (widget.isPassword &&
             !ValidatorEmailPassword.isValidPassword(value)) {
-          return 'La contraseña debe tener al menos 6 caracteres, una mayúscula y un carácter especial';
+          if (!ValidatorEmailPassword.hasMinLength(value)) {
+            return 'La contraseña debe tener más de 6 caracteres';
+          } else if (!ValidatorEmailPassword.hasSpecialCharacter(value)) {
+            return 'La contraseña debe incluir al menos un carácter especial';
+          }
         }
         return null;
       },

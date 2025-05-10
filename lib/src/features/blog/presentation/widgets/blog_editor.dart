@@ -20,7 +20,7 @@ class BlogEditor extends StatelessWidget {
       minLines: minLines,
       validator: (value) {
         if (value!.isEmpty) {
-          return 'Please enter some text for $hintext';
+          return 'Por favor, introduzca algún texto para $hintext';
         }
         return null;
       },

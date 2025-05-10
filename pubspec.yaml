@@ -9,6 +9,7 @@ environment:
   sdk: ^3.5.3
 
 dependencies:
+  animations: ^2.0.11
   cupertino_icons: ^1.0.8
   dotted_border: ^2.1.0
   flutter:
@@ -16,9 +17,11 @@ dependencies:
   flutter_bloc: ^9.0.0
   flutter_dotenv: ^5.2.1
   flutter_native_splash: ^2.4.4
+  flutter_staggered_animations: ^1.1.1
   fpdart: ^1.1.1
   get_it: ^8.0.3
   hive: ^4.0.0-dev.2
+  image_cropper: ^9.1.0
   image_picker: ^1.1.2
   internet_connection_checker_plus: ^2.7.1
   intl: ^0.20.2
@@ -66,22 +69,17 @@ flutter:
   #
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/to/font-from-package
-
 flutter_native_splash:
   color: "#121212"
-  image: assets/icons/blogapp.png  # PNG centrado
-  
+  image: assets/icons/blogapp.png # PNG centrado
+
   android: true
   ios: true
   web: false
 
-
-  android_gravity: center          # ❗ evita el estiramiento
+  android_gravity: center # ❗ evita el estiramiento
 
   android_12:
     image: assets/icons/blogapp.png
     color: "#121212"
     icon_background_color: "#121212"
-
-
-

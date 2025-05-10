@@ -13,4 +13,14 @@ abstract class BlogRepository {
     required List<String> topics,
   });
   Future<Either<Failure, List<Blog>>> getAllBlogs();
+
+  Future<Either<Failure, void>> deleteBlog(String blogId);
+
+  Future<Either<Failure, Blog>> editBlog({
+    required String blogId,
+    File? image,
+    required String title,
+    required String content,
+    required List<String> topics,
+  });
 }

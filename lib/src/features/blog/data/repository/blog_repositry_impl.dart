@@ -73,4 +73,81 @@ class BlogRepositryImpl implements BlogRepository {
       );
     }
   }
+
+  @override
+  Future<Either<Failure, void>> deleteBlog(String blogId) async {
+    try {
+      if (!await connectionCheck.isConnected) {
+        return left(Failure(Constants.noConnectionErrorMessage));
+      }
+
+      // 1. Obtener el blog para extraer el image_url
+      final blog = await remoteDataSource.getBlogById(blogId);
+
+      // 2. Eliminar usando el image_url si existe
+      await remoteDataSource.deleteBlog(
+        blogId,
+        imagePath: blog?.imageUrl,
+      );
+
+      // 3. Eliminar de la caché local
+      localDataSource.deleteLocalBlog(blogId);
+
+      return right(null);
+    } on ServerException catch (e) {
+      return left(Failure(e.message));
+    }
+  }
+
+  @override
+  Future<Either<Failure, Blog>> editBlog({
+    required String blogId,
+    File? image,
+    required String title,
+    required String content,
+    required List<String> topics,
+  }) async {
+    try {
+      if (!await connectionCheck.isConnected) {
+        return left(Failure(Constants.noConnectionErrorMessage));
+      }
+
+      String? imageUrl;
+      if (image != null) {
+        // Obtener blog actual para URL de imagen existente
+        final currentBlog = await remoteDataSource.getBlogById(blogId);
+
+        // Subir nueva imagen (maneja eliminación de la anterior)
+        imageUrl = await remoteDataSource.uploadBlogImage(
+          image: image,
+          blog: BlogModel(
+            id: blogId,
+            posterId: '',
+            title: title,
+            content: content,
+            imageUrl: '',
+            topics: topics,
+            updatedAt: DateTime.now(),
+          ),
+          currentImageUrl: currentBlog?.imageUrl,
+        );
+      }
+
+      // Actualizar blog con nueva URL de imagen (incluye cache busting)
+      final updatedBlog = await remoteDataSource.editBlog(
+        blogId: blogId,
+        title: title,
+        content: content,
+        topics: topics,
+        imageUrl: imageUrl,
+      );
+
+      // Limpiar caché local
+      localDataSource.updateLocalBlog(updatedBlog);
+
+      return right(updatedBlog);
+    } on ServerException catch (e) {
+      return left(Failure(e.message));
+    }
+  }
 }
