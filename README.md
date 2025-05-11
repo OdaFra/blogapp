@@ -91,10 +91,10 @@
 
 | Login | Registro | Crear blog |
 |:-----:|:--------:|:----------:|
-| ![Login](images/login.png) | ![Registro](images/register.png) | ![Crear blog](images/create.png) |
+| ![Login](images/login.png) | ![Registro](images/registro.png) | ![Crear blog](images/crear_blog.png) |
 
 ### 🏠 Pantalla principal | 👁️ Vista del blog
 
 | Pantalla principal | Vista del blog |
 |:------------------:|:--------------:|
-| ![Inicio](images/inicio.png) | ![Vista del blog](images/view_blog.png) |
+| ![Inicio](images/inicio.png) | ![Vista del blog](images/vista_blog.png) |
