@@ -85,31 +85,16 @@
     flutter run
     ```
 
-## 🖼️ Vista previa de la App
+## 🖼️ Vista previa
 
-<table>
-  <tr>
-    <td align="center">
-      🔐<br><b>Login</b><br>
-      <img src="images/login.png" width="250"/>
-    </td>
-    <td align="center">
-      🆕<br><b>Registro</b><br>
-      <img src="images/register.png" width="250"/>
-    </td>
-    <td align="center">
-      📝<br><b>Crear blog</b><br>
-      <img src="images/create.png" width="250"/>
-    </td>
-  </tr>
-  <tr>
-    <td align="center">
-      🏠<br><b>Pantalla principal</b><br>
-      <img src="images/home.png" width="250"/>
-    </td>
-    <td align="center">
-      👁️<br><b>Vista del blog</b><br>
-      <img src="images/view.png" width="250"/>
-    </td>
-  </tr>
-</table>
+### 🔐 Login | 🆕 Registro | 📝 Crear blog
+
+| Login | Registro | Crear blog |
+|:-----:|:--------:|:----------:|
+| ![Login](images/login.png) | ![Registro](images/register.png) | ![Crear blog](images/create.png) |
+
+### 🏠 Pantalla principal | 👁️ Vista del blog
+
+| Pantalla principal | Vista del blog |
+|:------------------:|:--------------:|
+| ![Inicio](images/home.png) | ![Vista del blog](images/view.png) |
