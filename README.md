@@ -85,7 +85,7 @@
     flutter run
     ```
 
-## 🖼️ Vista previa
+## 🖼️ Vista previa de la App
 
 <table>
   <tr>
