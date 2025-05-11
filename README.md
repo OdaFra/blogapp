@@ -1,111 +1,86 @@
-# 📱 BlogApp - Aplicación Flutter
+# 📱 BlogApp – Aplicación Flutter con Arquitectura Limpia
 
-![Flutter](https://img.shields.io/badge/Flutter-3.16-blue)
+![Flutter](https://img.shields.io/badge/Flutter-3.5.3-blue)
 ![Dart](https://img.shields.io/badge/Dart-3.5-blue)
-![Supabase](https://img.shields.io/badge/Supabase-2.8-green)
+![Supabase](https://img.shields.io/badge/Supabase-2.8.3-green)
 
-Aplicación móvil de blog desarrollada con Flutter utilizando arquitectura limpia y gestión de estado con BLoC.
-
-## 🚀 Características principales
-
-- 📝 Creación y gestión de posts de blog
-- 🔐 Autenticación de usuarios con Supabase
-- 🌐 Sincronización en tiempo real
-- 📷 Subida de imágenes con Image Picker
-- 📱 Diseño responsive y moderno
-- 🔄 Sincronización offline con Hive/Isar
-- 🧩 Arquitectura modular y escalable
-
-## 📦 Dependencias principales
-
-| Paquete | Versión | Uso |
-|---------|---------|-----|
-| flutter_bloc | ^9.0.0 | Gestión de estado |
-| supabase_flutter | ^2.8.3 | Backend como servicio |
-| hive | ^4.0.0-dev.2 | Almacenamiento local |
-| isar_flutter_libs | ^4.0.0-dev.13 | Base de datos local |
-| image_picker | ^1.1.2 | Selección de imágenes |
-| dotted_border | ^2.1.0 | Elementos UI decorativos |
-| fpdart | ^1.1.1 | Programación funcional |
-
-## 🛠️ Configuración
-
-### Requisitos previos
-
-- Flutter 3.16 o superior
-- Dart 3.5 o superior
-- Cuenta en Supabase
-- Android Studio/Xcode (para desarrollo nativo)
-
-### Pasos de instalación
-
-#### Clonar el repositorio
-
-```bash
-git clone https://github.com/tuusuario/blogapp.git
-cd blogapp
-
-# Instalar dependencias:
-
-flutter pub get
-
-#Configurar variables de entorno, se debe crear el archivo .env
-touch .env
-
-SUPABASE_URL=tu_url_supabase
-SUPABASE_KEY=tu_key_anon_publica
-```
-
-## ⚙️ Estructura del proyecto
-
-```bash
-lib/
-├── core/
-│   ├── constants/      # Constantes de la aplicación
-│   ├── errors/         # Manejo de errores personalizados
-│   ├── usecases/       # Casos de uso centrales
-│   ├── utils/          # Utilidades compartidas
-│   └── widgets/        # Widgets reutilizables
-├── features/
-│   ├── auth/           # Autenticación (login, registro)
-│   │   ├── bloc/       # Lógica de estado
-│   │   ├── models/     # Modelos de datos
-│   │   ├── views/      # Pantallas
-│   │   └── widgets/    # Componentes UI
-│   ├── posts/          # Gestión de posts
-│   └── profile/        # Perfil de usuario
-├── injection.dart      # Configuración de inyección de dependencias
-└── main.dart           # Punto de entrada principal
-```
-
-## 🏗️ Arquitectura
-
-La aplicación sigue los principios de **Clean Architecture** con:
-
-### **Capa de Presentación**
-
-- 🖼️ Widgets (Stateless/Stateful)
-- 🧩 BLoC para gestión de estado
-- 💉 Inyección de dependencias con GetIt
-
-### **Capa de Dominio**
-
-- 🏛️ Entidades centrales
-- 🎯 Casos de uso
-- 📜 Contracts/Interfaces
-
-### **Capa de Datos**
-
-- 📦 Repositorios implementados
-- 🌐 Fuentes de datos (Supabase API + Local DB)
-- 🔄 DTOs y mapeadores
+**BlogApp** es una aplicación móvil desarrollada con Flutter que permite la creación, visualización y gestión de publicaciones de blog. Implementa la arquitectura limpia, utilizando BLoC para la gestión de estado, Supabase como backend, y Hive/Isar para almacenamiento local.
 
 ---
 
-## 🚦 Ejecución
+## 🚀 Características Principales
 
-**Para ejecutar en modo desarrollo**:
+- 📝 Creación, edición y eliminación de publicaciones de blog.
+- 🔐 Autenticación de usuarios con Supabase.
+- 🌐 Sincronización en tiempo real.
+- 📷 Subida y recorte de imágenes con Image Picker e Image Cropper.
+- 📱 Diseño responsive y moderno con animaciones.
+- 💾 Almacenamiento local con Hive e Isar.
+- 🧩 Arquitectura modular y escalable siguiendo principios de Clean Architecture.
 
-```bash
-flutter run
-```
+---
+
+## 📦 Dependencias Principales
+
+| Paquete                         | Versión           | Descripción                         |
+|---------------------------------|-------------------|-------------------------------------|
+| `flutter_bloc`                  | ^9.0.0            | Gestión de estado con BLoC          |
+| `supabase_flutter`              | ^2.8.3            | Backend como servicio               |
+| `hive`                          | ^4.0.0-dev.2      | Almacenamiento local                |
+| `isar_flutter_libs`             | ^4.0.0-dev.13     | Base de datos local                 |
+| `image_picker`                  | ^1.1.2            | Selección de imágenes               |
+| `image_cropper`                 | ^9.1.0            | Recorte de imágenes                 |
+| `flutter_dotenv`                | ^5.2.1            | Manejo de variables de entorno      |
+| `get_it`                        | ^8.0.3            | Inyección de dependencias           |
+| `fpdart`                        | ^1.1.1            | Programación funcional              |
+| `flutter_native_splash`         | ^2.4.4            | Pantalla de carga personalizada     |
+| `flutter_staggered_animations`  | ^1.1.1            | Animaciones para listas             |
+| `intl`                          | ^0.20.2           | Internacionalización                |
+| `uuid`                          | ^4.5.1            | Generación de identificadores únicos|
+| `internet_connection_checker_plus` | ^2.7.1         | Verificación de conexión a internet |
+
+---
+
+## 🛠️ Configuración
+
+### Requisitos Previos
+
+- Flutter SDK 3.5.3 o superior
+- Dart SDK 3.5 o superior
+- Cuenta en Supabase
+- Android Studio o Xcode (para desarrollo nativo)
+
+### Pasos de Instalación
+
+1. **Clonar el repositorio:**
+
+   ```bash
+   git clone https://github.com/OdaFra/blogapp.git
+   cd blogapp
+    ```
+
+2. **Instalar dependencias:**
+
+   ```bash
+    flutter pub get
+    ```
+
+3. **Configurar variables de entorno:**
+    - Crea un archivo .env en la raíz del proyecto con el siguiente contenido:
+
+   ```bash
+    SUPABASE_URL=tu_url_supabase
+    SUPABASE_ANON_KEY=tu_clave_anonima
+    ```
+
+4. **Generar la pantalla de carga personalizada:**
+
+   ```bash
+    flutter pub run flutter_native_splash:create
+    ```
+
+5. **Ejecutar la aplicación:**
+
+   ```bash
+    flutter run
+    ```
