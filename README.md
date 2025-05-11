@@ -97,4 +97,4 @@
 
 | Pantalla principal | Vista del blog |
 |:------------------:|:--------------:|
-| ![Inicio](images/inicio.png) | ![Vista del blog](images/vista_blog.png) |
+| ![Inicio](images/pantalla_principal.png) | ![Vista del blog](images/vista_blog.png) |
