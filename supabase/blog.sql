@@ -14,6 +14,10 @@ create table blogs (
 alter table profiles
   enable row level security;
 
+/*
+Aplicar cambios de roles en la tabla para definir por usuario, de momento
+todos los usuarios pueden ver los blogds sin restricciones.
+*/
 create policy "Public blogs are viewable by everyone." on blogs
   for select using (true);
 
