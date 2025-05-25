@@ -53,10 +53,10 @@ class _AuthFieldState extends State<AuthField> {
       obscureText: _obscureText,
       validator: (value) {
         if (value!.isEmpty) {
-          return 'Por favor ingresa ${widget.hinTex}';
+          return 'Por favor ingrese su ${widget.hinTex}';
         }
         if (widget.isEmail && !ValidatorEmailPassword.isValidEmail(value)) {
-          return 'Por favor ingresa un email válido';
+          return 'Por favor ingrese un email válido';
         }
         if (widget.isPassword &&
             !ValidatorEmailPassword.isValidPassword(value)) {

@@ -132,18 +132,18 @@ class _SignUpPageState extends State<SignUpPage>
                       ),
                       const SizedBox(height: 30),
                       AuthField(
-                        hinTex: 'Nombre de usuario',
+                        hinTex: 'nombre de usuario',
                         controller: usernameController,
                       ),
                       const SizedBox(height: 15),
                       AuthField(
-                        hinTex: 'Correo electrónico',
+                        hinTex: 'correo electrónico',
                         controller: emailController,
                         isEmail: true,
                       ),
                       const SizedBox(height: 15),
                       AuthField(
-                        hinTex: 'Contraseña',
+                        hinTex: 'contraseña',
                         controller: passwordController,
                         isObscureText: true,
                         isPassword: true,
